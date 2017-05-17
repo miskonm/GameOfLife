@@ -2,7 +2,6 @@
 //  Creature.swift
 //  GameOfLife
 //
-//  Created by Nikita Misko on 04.05.17.
 //  Copyright © 2017 Nikita Misko. All rights reserved.
 //
 
