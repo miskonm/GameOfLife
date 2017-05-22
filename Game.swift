@@ -27,12 +27,14 @@ class Game {
     }
     
     
-    func iteration() {
+    func firstIteration() {
         lifeStep = 0
         
         let firstLiveCreatures = creatures.filter { $0.status == .Allive }
         moveCreatures(firstLiveCreatures)
-        
+    }
+    
+    func secondIteration() {
         let deadCreatures = creatures.filter { $0.status == .Dead }
         let newCreatures =  deadCreatures.filter { alliveNeighboursForCreature($0) == 3 }
         
@@ -42,7 +44,6 @@ class Game {
         
         for creature in newCreatures {
             creature.bornFromParent(parentForCreature(creature))
-//            creature.setStatus(.Allive)
         }
         
         for creature in dyingCreatures {
@@ -87,6 +88,10 @@ class Game {
         }
     }
     
+    func getCreatureFor(x: Int, y: Int) -> Creature? {
+        return creatures.filter{ $0.x == x && $0.y == y }.first
+    }
+    
     func getCreatureForPosition(_ x: Int, _ y: Int) -> Creature? {
         let creatureForChange = creatures.filter { $0.x == x && $0.y == y }
         
@@ -119,7 +124,7 @@ class Game {
             
             var possibleHomes = [Creature]()
             for home in emptyHomesNear {
-                let homeNeibs = alliveNeighboursForCreature(home)
+                let homeNeibs = alliveNeighboursForCreature(home) - 1
                 
                 for neib in preferredNeibs {
                     if (homeNeibs == neib) {
@@ -131,8 +136,6 @@ class Game {
             if (possibleHomes.count > 0) {
                 let number = Int(arc4random_uniform(UInt32(possibleHomes.count)))
                 creature.moveTo(possibleHomes[number], lifeStep: lifeStep)
-//                creature.setStatus(.Dead)
-//                possibleHomes[number].setStatus(.Allive)
             }
             
             lifeStep += 1

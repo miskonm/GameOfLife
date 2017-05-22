@@ -7,10 +7,6 @@
 
 import Foundation
 
-enum Bit {
-    case A, B
-}
-
 class Creature {
     let x, y: Int
     var status: CreatureStatus

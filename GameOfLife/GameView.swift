@@ -21,17 +21,6 @@ class GameView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    func colorForCreature(_ status: CreatureStatus) -> UIColor {
-        
-        switch status {
-        case .Allive:
-            return UIColor.black
-        case .Dead:
-            return UIColor.white
-        }
-    }
-    
     func newColorForCreature(_ creature: Creature) -> UIColor {
         guard let genom = creature.genom else {
             return UIColor.white
@@ -64,7 +53,6 @@ class GameView: UIView {
         let context = UIGraphicsGetCurrentContext()
         
         for creature in game.creatures {
-//            context!.setFillColor(colorForCreature(creature.status).cgColor)
             context!.setFillColor(newColorForCreature(creature).cgColor)
             context!.addRect(frameForCreature(creature))
             context!.fillPath()

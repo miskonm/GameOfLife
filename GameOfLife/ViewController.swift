@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var randomButton: UIButton!
     @IBOutlet weak var pauseButton: UIButton!
     @IBOutlet weak var resetButton: UIButton!
+    @IBOutlet weak var topLabel: UILabel!
     
     // IBActions
     @IBAction func startButtonPressed() {
@@ -26,7 +27,7 @@ class ViewController: UIViewController {
         startButton.isEnabled = false
         pauseButton.isEnabled = true
         
-        time = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(ViewController.startLife), userInfo: nil, repeats: true)
+        time = Timer.scheduledTimer(timeInterval: 0.15, target: self, selector: #selector(ViewController.startLife), userInfo: nil, repeats: true)
     }
     
     
@@ -98,7 +99,9 @@ class ViewController: UIViewController {
     
     
     func startLife() {
-        game.iteration()
+        game.firstIteration()
+        gameView.setNeedsDisplay()
+        game.secondIteration()
         gameView.setNeedsDisplay()
     }
     
@@ -111,16 +114,27 @@ class ViewController: UIViewController {
         let creatureSize = CGSize(width: gameView.bounds.width / width, height: gameView.bounds.height / height)
         let x = Int(location.x / creatureSize.width)
         let y = Int(location.y / creatureSize.height)
-        
-        game.changeCreatureState(x: x, y: y)
-        print("genom: \(game.getCreatureForPosition(x, y)?.genom)")
-        gameView.setNeedsDisplay()
-        resetButton.isEnabled = true
+    
+        if let genom = game.getCreatureFor(x: x, y: y)?.genom {
+            topLabel.text = "Creature genom: \(genom)"
+        } else {
+            topLabel.text = "Creature genom: nil"
+        }
     }
     
     
     func handleDoubleTap(recognizer: UITapGestureRecognizer) {
+        let location = recognizer.location(in: gameView)
         
+        let width = CGFloat(game.width)
+        let height = CGFloat(game.height)
+        let creatureSize = CGSize(width: gameView.bounds.width / width, height: gameView.bounds.height / height)
+        let x = Int(location.x / creatureSize.width)
+        let y = Int(location.y / creatureSize.height)
+        
+        game.changeCreatureState(x: x, y: y)
+        gameView.setNeedsDisplay()
+        resetButton.isEnabled = true
     }
     
     
@@ -135,8 +149,14 @@ class ViewController: UIViewController {
     }
     
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         
         // Set up view
         let width = view.frame.width - sideMargin * 2.0
@@ -149,8 +169,10 @@ class ViewController: UIViewController {
         
         // Gestures
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap(recognizer:)))
-        view.addGestureRecognizer(singleTap)
+        gameView.addGestureRecognizer(singleTap)
         
-        let doubleTap = UITapGestureRecognizer(target: self, action: #selecotr()
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(recognizer:)))
+        doubleTap.numberOfTapsRequired = 2
+        gameView.addGestureRecognizer(doubleTap)
     }
 }
